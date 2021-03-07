@@ -1,66 +1,60 @@
-
 window.onload = function(){
-    const data = {mes : 3, dia : 4, ano : 2022, hora : 0, min : 1, seg : 10 };
+
+    const lista = function(){
+        return new Promise((resolve,reject)=>{
+            const frame = document.createDocumentFragment();
+            
+            for (let i = 0; i < 200; i++) {
+                const nodo = document.createElement("ol");
+                const hijo = document.createElement("li");
+                const data = document.createTextNode("USUARIO" + i);
+                nodo.appendChild(hijo);
+                hijo.appendChild(data)
+                frame.appendChild(nodo);
+            }            
+            resolve(frame);
+        })
+    }
     
-    const Cookie = new Object({
-        date : new Date(),
-        limite: function(data){
-            const expire = this.expire();
-            expire[1] = this.Dia(data.dia);
-            expire[2] = this.Mes(data.mes);
-            expire[3] = this.Ano(data.ano);
-            expire[4][0] = this.Hor(data.hora);
-            expire[4][1] = this.Min(data.min);
-            expire[4][2] = this.Seg(data.seg);
-            expire[4] = expire[4].join(":");
-            return expire.join(" ");
-        },
-        expire: function(){
-            const cadena = this.date.toGMTString().split(" ");
-            cadena[4] = cadena[4].split(":");
-            return cadena;
-        },
-        Sem : function(){
-            const semana = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
-            return semana[this.date.getDay()];//
-        },
-        Mes : function(id){
-            const mes = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-            return (mes.hasOwnProperty(id-1)) ? mes[id-1] : mes[this.date.getMonth()];
-        },
-        Dia : function(id){
-            const dia = this.date.getMonth();
-            const calendario = new Date(this.Ano(), (dia+1<=12 && dia+1>=1) ? dia+1 : dia-1, 0);
-            return (id<=calendario.getDate()) ? (id>=this.date.getDay()) ? "0"+id : this.date.getDay() : this.date.getDay();
-        },
-        Ano : function(id=0){
-            return (id>=this.date.getFullYear()) ? id : this.date.getFullYear();
-        },
-        Hor : function(id){
-            const hora = this.expire()[4][0];
-            const suma = ""+(parseInt(hora)+id);
-            return (suma<=23) ? (suma.length!=1) ? suma : "0"+suma : hora;
-        },
-        Min : function(id){
-            const min = this.expire()[4][1];
-            const suma = ""+(parseInt(min)+id);
-            return (suma<=59) ? (suma.length!=1) ? suma : "0"+suma : min;
-        },
-        Seg : function(id){
-            const seg = this.expire()[4][2];
-            const suma = ""+(parseInt(seg)+id);
-            return (suma<=59) ? (suma.length!=1) ? suma : "0"+suma : seg;
-        }
-    });
-    console.log(Cookie.limite(data));
-    document.cookie = "Nombre=Emmanuel; expires="+Cookie.limite(data)+";";
-    var date = new Date();
-    let cadena = date.toGMTString();
-    console.log(cadena);
+    lista().then(res=>{
+        document.getElementById("llenar").append(res);  
+    })
 
-    // Cookie.limite.call(expire).then(res=>{
-    //     console.log(res);
-    // })
+    const saludar = function(){
+        return new Promise((resolve, reject)=>{
+            console.log(`Hola soy ${this.name} como estas`);
+            resolve({maquina : maquina.call(data),servidor: servidor.call(data)});
+        })
+    }
+    const maquina = function(){
+        return new Promise((resolve, reject)=>{
+            resolve(`Hola ${this.name} como estas soy ${this.intel}`);
+        })
+    }
+    const servidor = function(){
+        return new Promise((resolve, reject)=>{
+            resolve(`Hola ${this.name} y ${this.intel} soy el servidor ${this.tiempo} estoy en ejecucion`);
+        })
+    }
 
+    const data = new Object();
+    document.getElementById("promesas").addEventListener("click", function(){
+        data.name = document.getElementById("inputUser").value;
+        data.intel = document.getElementById("inputMachine").value;
+        data.tiempo = document.getElementById("inputServer").value;
+
+        saludar.call(data)
+        .then(res =>{
+            return res;
+        })
+        .then(res =>{
+            res.maquina.then(console.log);
+            return res;
+        }).then(res =>{
+            res.servidor.then(console.log);
+        }).catch(res =>{
+            console.log(res);
+        })
+    })
 
 }
